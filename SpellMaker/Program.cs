@@ -22,7 +22,6 @@ internal static class Program
 
     private static void RegisterInvocations(this ICollection<IInvocation> invocations)
     {
-        ArgumentNullException.ThrowIfNull(invocations);
         //Verbs
         invocations.Add(new Throw());
         invocations.Add(new Touch());
