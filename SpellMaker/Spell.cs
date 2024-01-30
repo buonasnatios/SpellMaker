@@ -8,7 +8,7 @@ public class Spell(List<IInvocation> invocations, string spellName)
     {
     }
 
-    private List<IInvocation> Invocations { get; } = invocations;
+    private List<IInvocation> Invocations { get; set; } = invocations;
     public string SpellName { get; set; } = spellName;
     public string SpellSentence => GetSpellSentence();
     public int Size { get; set; } = 0;
@@ -37,6 +37,7 @@ public class Spell(List<IInvocation> invocations, string spellName)
         if (invocationsWithOrder.Count == 1)
         {
             OrderedInvocations = CreateOrderedInvocation(invocationsWithOrder.First());
+            Invocations = OrderedInvocations.ToList();
         }
         var sentence = AggregateInvocations();
         sentence = AggregateTarget(sentence);
@@ -51,12 +52,33 @@ public class Spell(List<IInvocation> invocations, string spellName)
         LinkedList<IInvocation> orderedInvocations = [];
         foreach (var invocationType in invocationWithOrder.InvocationOrder)
         {
-            orderedInvocations.AddLast(Invocations.Find(invocation => invocation!.InvocationType == invocationType) ?? throw new InvalidOperationException());
+            switch (invocationType)
+            {
+                case InvocationType.Noun:
+                    orderedInvocations.AddLast(Invocations.Find(invocation => invocation.InvocationType == invocationType) ??
+                                               throw new InvalidOperationException());
+                    break;
+                case InvocationType.Verb:
+                    orderedInvocations.AddLast(Invocations.Find(invocation => invocation.InvocationType == invocationType) ??
+                                               throw new InvalidOperationException());
+                    break;
+                case InvocationType.Target:
+                    break;
+                case InvocationType.Self:
+                    orderedInvocations.AddLast(invocationWithOrder);
+                    break;
+                case InvocationType.Adjective:
+                    orderedInvocations.AddLast(Invocations.Find(invocation => invocation.InvocationType == invocationType) ??
+                                               throw new InvalidOperationException());
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         if (orderedInvocations.Count < Invocations.Count)
         {
-            List<IInvocation> extraInvocations = Invocations.Where(invocation => !orderedInvocations.Contains(invocation)).ToList();
+            var extraInvocations = Invocations.Where(invocation => !orderedInvocations.Contains(invocation)).ToList();
             foreach (var invocation in extraInvocations)
             {
                 switch (invocation.InvocationType)
@@ -71,9 +93,9 @@ public class Spell(List<IInvocation> invocations, string spellName)
                         break;
                     case InvocationType.Adjective:
                         orderedInvocations.AddBefore(
-                            new LinkedListNode<IInvocation>(
+                            orderedInvocations.Find(
                                 orderedInvocations.First(
-                                    orderedInvocation => orderedInvocation.InvocationType == InvocationType.Noun)), 
+                                    orderedInvocation => orderedInvocation.InvocationType == InvocationType.Noun)) ?? throw new InvalidOperationException(), 
                             invocation);
                         break;
                     default:
@@ -81,6 +103,8 @@ public class Spell(List<IInvocation> invocations, string spellName)
                 }
             }
         }
+
+        return orderedInvocations.ToList();
     }
 
     private IEnumerable<IInvocation> GetOrderedInvocation()
@@ -108,9 +132,11 @@ public class Spell(List<IInvocation> invocations, string spellName)
         {
             return current + invocation.InvocationType switch
             {
-                InvocationType.Noun => $"a {invocation.Name} ",
-                InvocationType.Verb => $"{invocation?.Name} ",
-                InvocationType.Adjective => $"",
+                InvocationType.Noun => $"{invocation.Name} ",
+                InvocationType.Verb => $"{invocation.Name} ",
+                InvocationType.Adjective => $"{invocation.Name} ",
+                InvocationType.Target => "",
+                InvocationType.Self => "",
                 _ => throw new ArgumentOutOfRangeException()
             };
         });

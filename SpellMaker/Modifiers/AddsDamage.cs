@@ -1,10 +1,6 @@
 ﻿namespace SpellMaker.Modifiers;
 
-public class AddsDamage
+public class AddsDamage(int damage)
 {
-    public AddsDamage(int damage)
-    {
-        Damage = damage;
-    }
-    public int Damage { get; set; }
+    public int Damage { get; set; } = damage;
 }
