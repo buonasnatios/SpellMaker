@@ -1,7 +1,9 @@
-﻿namespace SpellMaker.Modifiers;
+﻿using SpellMaker.Modifiers.Elements;
+
+namespace SpellMaker.Modifiers;
 
 public interface IElement
 {
     public string ElementName { get; set; }
-    public int ElementType { get; set; }
+    public ElementType ElementType { get; set; }
 }

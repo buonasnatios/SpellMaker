@@ -1,6 +1,9 @@
 ﻿namespace SpellMaker.Invocations;
 
-public class Multiple
+public class Multiple : IInvocation
 {
-    
+    public string Name { get; set; }
+    public object Addition { get; set; }
+    public InvocationType InvocationType { get; set; }
+    public List<InvocationType> InvocationOrder { get; set; }
 }

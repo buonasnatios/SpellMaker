@@ -3,5 +3,5 @@
 public class Holy : IElement
 {
     public string ElementName { get; set; } = "Holy";
-    public int ElementType { get; set; } = 2;
+    public ElementType ElementType { get; set; } = ElementType.Holy;
 }

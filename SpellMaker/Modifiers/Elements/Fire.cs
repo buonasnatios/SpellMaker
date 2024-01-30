@@ -3,5 +3,5 @@
 public class Fire : IElement
 {
     public string ElementName { get; set; } = "Fire";
-    public int ElementType { get; set; } = 1;
+    public ElementType ElementType { get; set; } = ElementType.Fire;
 }
