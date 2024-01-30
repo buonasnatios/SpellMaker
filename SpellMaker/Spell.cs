@@ -40,12 +40,18 @@ public class Spell(List<IInvocation> invocations, string spellName)
             Invocations = orderedInvocations.ToList();
         }
         var sentence = AggregateInvocations();
-        sentence = AggregateTarget(sentence);
+        sentence = AddTarget(sentence);
+        sentence = AddSpellStats(sentence);
+
+        return sentence;
+    }
+
+    private string AddSpellStats(string sentence)
+    {
         sentence = AddDamageText(sentence);
         sentence = AddSizeText(sentence);
         sentence = AddRangeText(sentence);
         sentence = EndSentence(sentence);
-
         return sentence;
     }
 
@@ -144,20 +150,20 @@ public class Spell(List<IInvocation> invocations, string spellName)
         });
     }
 
-    private string AggregateTarget(string sentence)
+    private string AddTarget(string sentence)
     {
         switch (Target)
         {
             case SpellMaker.Target.Self:
-                return sentence + "at yourself ";
+                return sentence + "yourself ";
             case SpellMaker.Target.Ally:
-                return sentence + "at an ally ";
+                return sentence + "an ally ";
             case SpellMaker.Target.Enemy:
-                return sentence + "at an enemy ";
+                return sentence + "an enemy ";
             case SpellMaker.Target.NonSelf:
-                return sentence + "at anything excluding yourself ";
+                return sentence + "anyone excluding yourself ";
             case SpellMaker.Target.Any:
-                return sentence + "at anything ";
+                return sentence + "anyone ";
             case null:
                 break;
             default:
@@ -173,7 +179,7 @@ public class Spell(List<IInvocation> invocations, string spellName)
         {
             0 => sentence,
             > 0 => sentence + $"dealing {Damage} damage ",
-            < 0 => sentence + $"healing {Damage} health ",
+            < 0 => sentence + $"healing {Damage * -1} health ",
             _ => throw new ArgumentOutOfRangeException()
         };
     }

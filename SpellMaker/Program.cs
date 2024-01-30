@@ -3,21 +3,26 @@ using SpellMaker.Invocations;
 
 namespace SpellMaker;
 
-static class Program
+internal static class Program
 {
-    static void Main()
+    private static void Main()
     {
         List<IInvocation> invocations = [];
-        RegisterInvocations(invocations);
+        invocations.RegisterInvocations();
         var fireBall = new Spell("Fireball");
         fireBall.AddInvocation(invocations.Find(invocation => invocation?.Name == "Flame"));
         fireBall.AddInvocation(invocations.Find(invocation => invocation?.Name == "Throw"));
         fireBall.AddInvocation(invocations.Find(invocation => invocation?.Name == "Big"));
         Console.WriteLine(fireBall.SpellSentence);
+        var healingTouch = new Spell("Fireball");
+        healingTouch.AddInvocation(invocations.Find(invocation => invocation?.Name == "Heal"));
+        healingTouch.AddInvocation(invocations.Find(invocation => invocation?.Name == "Touch"));
+        Console.WriteLine(healingTouch.SpellSentence);
     }
 
-    static void RegisterInvocations(ICollection<IInvocation> invocations)
+    private static void RegisterInvocations(this ICollection<IInvocation> invocations)
     {
+        ArgumentNullException.ThrowIfNull(invocations);
         //Verbs
         invocations.Add(new Throw());
         invocations.Add(new Touch());
