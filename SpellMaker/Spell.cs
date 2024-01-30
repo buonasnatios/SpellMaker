@@ -1,5 +1,6 @@
-﻿using SpellMaker.Modifiers;
-using SpellMaker.Modifiers.Elements;
+﻿using SpellMaker.Data.Enums;
+using SpellMaker.Data.Invocations;
+using SpellMaker.Data.Modifiers;
 
 namespace SpellMaker;
 
@@ -14,10 +15,16 @@ public class Spell(List<IInvocation> invocations, string spellName)
     public string SpellSentence => GetSpellSentence();
     public float Size { get; set; } = 1f;
     public float Damage { get; set; } = 0.0f;
-    public int Duration { get; set; } = 0;
-    public float Range { get; set; } = 0;
-    public int CastTime { get; set; } = 0;
-    public ElementType? DamageType { get; set; }
+    public float Speed { get; set; } = 0.0f;
+    public float Weight { get; set; } = 0.0f;
+    public float Duration { get; set; } = 1.0f;
+    public float Range { get; set; } = 1;
+    public float CastTime { get; set; } = 0;
+    public int Casts { get; set; } = 1;
+
+    public float Piercing  => (Weight+Speed)/2;
+    public SpellShape SpellShape { get; set; }
+    public ElementType? ElementType { get; set; }
     private Target? Target { get; set; }
 
     public int AddInvocation(IInvocation? invocation)
@@ -154,15 +161,15 @@ public class Spell(List<IInvocation> invocations, string spellName)
     {
         switch (Target)
         {
-            case SpellMaker.Target.Self:
+            case Data.Enums.Target.Self:
                 return sentence + "yourself ";
-            case SpellMaker.Target.Ally:
+            case Data.Enums.Target.Ally:
                 return sentence + "an ally ";
-            case SpellMaker.Target.Enemy:
+            case Data.Enums.Target.Enemy:
                 return sentence + "an enemy ";
-            case SpellMaker.Target.NonSelf:
+            case Data.Enums.Target.NonSelf:
                 return sentence + "anyone excluding yourself ";
-            case SpellMaker.Target.Any:
+            case Data.Enums.Target.Any:
                 return sentence + "anyone ";
             case null:
                 break;
@@ -208,22 +215,60 @@ public class Spell(List<IInvocation> invocations, string spellName)
     {
         switch (addition)
         {
-            case IElement element: DamageType = element.ElementType;
+            //Setters
+            case ChangesShape shape: 
+                SpellShape = shape.Shape;
                 break;
-            case TargetModifier targetModifier: Target = targetModifier.Target;
+            case IElement element:
+                if (ElementType is null)
+                {
+                    ElementType = element.ElementType;
+                }
+                else
+                {
+                    ElementType = CombineElements();
+                }
+                Weight = element.WeightModifier;
                 break;
-            case AddsDamage addsDamage:
-                Damage += addsDamage.Damage;
+            case TargetModifier targetModifier: 
+                Target = targetModifier.Target;
                 break;
+            
+            case SetsRange setsRange:
+                Range = setsRange.Range;
+                break;
+            
+            //Multipliers
             case MultipliesDamage multipliesDamage:
                 Damage *= multipliesDamage.Multiplier;
+                break;
+            case MultipliesDuration multipliesDuration:
+                Duration *= multipliesDuration.Multiplier;
                 break;
             case MultipliesSize multipliesSize:
                 Size *= multipliesSize.Multiplier;
                 break;
+            case MultipliesSpeed multipliesSpeed:
+                Speed *= multipliesSpeed.Multiplier;
+                break;
+            case MultipliesWeight multipliesWeight:
+                Weight *= multipliesWeight.Multiplier;
+                break;
+            
+            //Additions
+            case AddsCasts addsCasts:
+                Casts += addsCasts.Casts;
+                break;
+            case AddsDamage addsDamage:
+                Damage += addsDamage.Damage;
+                break;
             case AddsRange addsRange:
                 Range += addsRange.Range;
                 break;
+            case AddsSpeed addsSpeed:
+                Speed += addsSpeed.Speed;
+                break;
+            
             case List<object> list:
                 foreach (var item in list)
                 {
@@ -231,6 +276,34 @@ public class Spell(List<IInvocation> invocations, string spellName)
                 }
 
                 break;
+        }
+    }
+
+    private ElementType? CombineElements(ElementType elementType)
+    {
+        switch (ElementType)
+        {
+            case Data.Enums.ElementType.Cold:
+                break;
+            case Data.Enums.ElementType.Earth:
+                break;
+            case Data.Enums.ElementType.Heat:
+                break;
+            case Data.Enums.ElementType.Holy:
+                break;
+            case Data.Enums.ElementType.Lightning:
+                break;
+            case Data.Enums.ElementType.Water:
+                break;
+            case Data.Enums.ElementType.Ice:
+                break;
+            case null:
+            case Data.Enums.ElementType.Demonic:
+            case Data.Enums.ElementType.Air:
+            case Data.Enums.ElementType.Lava:
+            case Data.Enums.ElementType.Plasma:
+            default:
+                throw new ArgumentOutOfRangeException(nameof(elementType), elementType, null);
         }
     }
 }

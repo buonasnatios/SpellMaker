@@ -1,0 +1,17 @@
+﻿using SpellMaker.Data.Enums;
+using SpellMaker.Data.Modifiers;
+using SpellMaker.Data.Modifiers.Elements;
+
+namespace SpellMaker.Data.Invocations.Nouns;
+
+public class Rock : IInvocation
+{
+    public string Name { get; set; } = "Rock";
+    public object Addition { get; set; } = new List<object> { new Earth(), new AddsDamage(6) };
+    public InvocationType InvocationType { get; set; } = InvocationType.Noun;
+    public List<InvocationType> InvocationOrder { get; set; } = 
+    [
+        InvocationType.Self,
+        InvocationType.Descriptor
+    ];
+}

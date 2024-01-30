@@ -1,5 +1,9 @@
 ﻿using SpellMaker;
+using SpellMaker.Data.Invocations;
+using SpellMaker.Data.Invocations.Adjective;
+using SpellMaker.Data.Invocations.Nouns;
 using SpellMaker.Invocations;
+using SpellMaker.Invocations.Verbs;
 
 namespace SpellMaker;
 
@@ -30,6 +34,7 @@ internal static class Program
         invocations.Add(new Flame());
         invocations.Add(new Heal());
         invocations.Add(new Rock());
+        invocations.Add(new Water());
     
         //Adjective
         invocations.Add(new Big());
