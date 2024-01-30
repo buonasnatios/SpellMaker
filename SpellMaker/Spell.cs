@@ -1,4 +1,5 @@
 ﻿using SpellMaker.Modifiers;
+using SpellMaker.Modifiers.Elements;
 
 namespace SpellMaker;
 
@@ -11,12 +12,12 @@ public class Spell(List<IInvocation> invocations, string spellName)
     private List<IInvocation> Invocations { get; set; } = invocations;
     public string SpellName { get; set; } = spellName;
     public string SpellSentence => GetSpellSentence();
-    public int Size { get; set; } = 0;
-    public int Damage { get; set; } = 0;
+    public float Size { get; set; } = 1f;
+    public float Damage { get; set; } = 0.0f;
     public int Duration { get; set; } = 0;
-    public int Range { get; set; } = 0;
+    public float Range { get; set; } = 0;
     public int CastTime { get; set; } = 0;
-    public int? DamageType { get; set; }
+    public ElementType? DamageType { get; set; }
     private Target? Target { get; set; }
 
     public int AddInvocation(IInvocation? invocation)
@@ -33,21 +34,22 @@ public class Spell(List<IInvocation> invocations, string spellName)
     private string GetSpellSentence()
     {
         var invocationsWithOrder = GetOrderedInvocation().ToList();
-        List<IInvocation> OrderedInvocations = [];
         if (invocationsWithOrder.Count == 1)
         {
-            OrderedInvocations = CreateOrderedInvocation(invocationsWithOrder.First());
-            Invocations = OrderedInvocations.ToList();
+            var orderedInvocations = CreateOrderedInvocation(invocationsWithOrder.First());
+            Invocations = orderedInvocations.ToList();
         }
         var sentence = AggregateInvocations();
         sentence = AggregateTarget(sentence);
         sentence = AddDamageText(sentence);
+        sentence = AddSizeText(sentence);
+        sentence = AddRangeText(sentence);
         sentence = EndSentence(sentence);
 
         return sentence;
     }
 
-    private List<IInvocation> CreateOrderedInvocation(IInvocation invocationWithOrder)
+    private IEnumerable<IInvocation> CreateOrderedInvocation(IInvocation invocationWithOrder)
     {
         LinkedList<IInvocation> orderedInvocations = [];
         foreach (var invocationType in invocationWithOrder.InvocationOrder)
@@ -104,7 +106,7 @@ public class Spell(List<IInvocation> invocations, string spellName)
             }
         }
 
-        return orderedInvocations.ToList();
+        return orderedInvocations;
     }
 
     private IEnumerable<IInvocation> GetOrderedInvocation()
@@ -171,7 +173,28 @@ public class Spell(List<IInvocation> invocations, string spellName)
         {
             0 => sentence,
             > 0 => sentence + $"dealing {Damage} damage ",
-            < 0 => sentence + $"healing {Damage} health "
+            < 0 => sentence + $"healing {Damage} health ",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    private string AddSizeText(string sentence)
+    {
+        return Size switch
+        {
+            0 => sentence,
+            > 0 => sentence + $"with a radius of {Size} meters ",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    private string AddRangeText(string sentence)
+    {
+        return Range switch
+        {
+            0 => sentence,
+            > 0 => sentence + $"and a range of {Range} meters ",
+            _ => throw new ArgumentOutOfRangeException()
         };
     }
 
@@ -185,6 +208,12 @@ public class Spell(List<IInvocation> invocations, string spellName)
                 break;
             case AddsDamage addsDamage:
                 Damage += addsDamage.Damage;
+                break;
+            case MultipliesDamage multipliesDamage:
+                Damage *= multipliesDamage.Multiplier;
+                break;
+            case MultipliesSize multipliesSize:
+                Size *= multipliesSize.Multiplier;
                 break;
             case AddsRange addsRange:
                 Range += addsRange.Range;
