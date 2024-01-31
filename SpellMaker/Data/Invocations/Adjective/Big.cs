@@ -12,6 +12,7 @@ public class Big : IInvocation
         new MultipliesSize(1.5f)
     };
     public InvocationType InvocationType { get; set; } = InvocationType.Adjective;
+
     public List<InvocationType> InvocationOrder { get; set; } = [];
 
     public InvocationOrderPriority OrderPriority { get; set; } = InvocationOrderPriority.None;

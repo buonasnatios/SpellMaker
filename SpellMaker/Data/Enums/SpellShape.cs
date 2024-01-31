@@ -2,6 +2,7 @@
 
 public enum SpellShape
 {
+    None,
     Arrow,
     Ball,
     Bolt

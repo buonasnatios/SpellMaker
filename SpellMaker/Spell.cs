@@ -32,18 +32,59 @@ public class Spell(List<IInvocation> invocations, string spellName)
     public ElementType? ElementType { get; set; }
     public Target? Target { get; set; }
     public string SpellSentence => new SpellSentenceGenerator(this).GenerateSentence();
+    public List<InvocationType> SpellOrder { get; set; } = [];
 
-    public int AddInvocation(IInvocation? invocation)
+    private InvocationType CurrentSpellType()
+    {
+        return SpellOrder.Count == Invocations.Count ? InvocationType.None : SpellOrder[Invocations.Count];
+    } 
+
+    public bool AddInvocation(IInvocation? invocation)
     {
         if (invocation is null)
         {
-            return 1;
+            throw new NullReferenceException("Invocation that you are trying to add is not valid.");
         }
+
+        if (Invocations.Contains(invocation)) return false;
+        if (!AddToSpellOrder(invocation)) return false;
+        
         Invocations.Add(invocation);
         ImplementAdditionEffects(invocation.Addition);
-        return 0;
+        return true;
     }
-    
+
+    private bool AddToSpellOrder(IInvocation invocation)
+    {
+        if (SpellOrder.Count == 0 && invocation.InvocationOrder.Count > 0)
+        {
+            SpellOrder.AddRange(invocation.InvocationOrder);
+            SpellOrder[^invocation.InvocationOrder.Count] = invocation.InvocationType;
+            return true;
+        }
+
+        if (invocation.InvocationType == CurrentSpellType())
+        {
+            if (invocation.InvocationOrder.Count > 0)
+            {
+                
+            }
+            return true;
+        }
+        
+        var isNotAdjectiveNounPairing = invocation.InvocationType != InvocationType.Adjective || CurrentSpellType() != InvocationType.Noun;
+        if (isNotAdjectiveNounPairing) return false;
+        if (invocation.InvocationOrder.Count != 0)
+        {
+            SpellOrder.AddRange(invocation.InvocationOrder);
+            SpellOrder[^invocation.InvocationOrder.Count] = invocation.InvocationType;
+            return true;
+        }
+        
+        SpellOrder.Insert(Invocations.Count, invocation.InvocationType);
+        return true;
+    }
+
     private void ImplementAdditionEffects(object addition)
     {
         switch (addition)

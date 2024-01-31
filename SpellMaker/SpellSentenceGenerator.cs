@@ -38,8 +38,8 @@ public class SpellSentenceGenerator(Spell spell)
                 InvocationType.Noun => $"{invocation.Name} ",
                 InvocationType.Verb => $"{invocation.Name} ",
                 InvocationType.Adjective => $"{invocation.Name} ",
-                InvocationType.Target => "",
-                InvocationType.Self => "",
+                InvocationType.Self => $"{invocation.Name} ",
+                InvocationType.Descriptor => $"{invocation.Name} ",
                 _ => throw new ArgumentOutOfRangeException()
             };
         });

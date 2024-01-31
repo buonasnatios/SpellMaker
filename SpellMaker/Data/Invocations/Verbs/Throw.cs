@@ -18,8 +18,7 @@ public class Throw : IInvocation
     public List<InvocationType> InvocationOrder { get; set; } =
     [
         InvocationType.Self,
-        InvocationType.Noun,
-        InvocationType.Target
+        InvocationType.Noun
     ];
 
     public InvocationOrderPriority OrderPriority { get; set; } = InvocationOrderPriority.Medium;
