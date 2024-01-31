@@ -1,9 +1,7 @@
-﻿using SpellMaker;
-using SpellMaker.Data.Invocations;
+﻿using SpellMaker.Data.Invocations;
 using SpellMaker.Data.Invocations.Adjective;
 using SpellMaker.Data.Invocations.Nouns;
-using SpellMaker.Invocations;
-using SpellMaker.Invocations.Verbs;
+using SpellMaker.Data.Invocations.Verbs;
 
 namespace SpellMaker;
 
@@ -14,13 +12,13 @@ internal static class Program
         List<IInvocation> invocations = [];
         invocations.RegisterInvocations();
         var fireBall = new Spell("Fireball");
-        fireBall.AddInvocation(invocations.Find(invocation => invocation?.Name == "Flame"));
-        fireBall.AddInvocation(invocations.Find(invocation => invocation?.Name == "Throw"));
-        fireBall.AddInvocation(invocations.Find(invocation => invocation?.Name == "Big"));
+        fireBall.AddInvocation(invocations.Find(invocation => invocation.Name == "Throw"));
+        fireBall.AddInvocation(invocations.Find(invocation => invocation.Name == "Big"));
+        fireBall.AddInvocation(invocations.Find(invocation => invocation.Name == "Flame"));
         Console.WriteLine(fireBall.SpellSentence);
         var healingTouch = new Spell("Fireball");
-        healingTouch.AddInvocation(invocations.Find(invocation => invocation?.Name == "Heal"));
-        healingTouch.AddInvocation(invocations.Find(invocation => invocation?.Name == "Touch"));
+        healingTouch.AddInvocation(invocations.Find(invocation => invocation.Name == "Touch"));
+        healingTouch.AddInvocation(invocations.Find(invocation => invocation.Name == "Heal"));
         Console.WriteLine(healingTouch.SpellSentence);
     }
 

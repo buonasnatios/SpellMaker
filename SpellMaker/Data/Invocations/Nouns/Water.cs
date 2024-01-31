@@ -11,6 +11,7 @@ public class Water : IInvocation
     public InvocationType InvocationType { get; set; } = InvocationType.Noun;
     public List<InvocationType> InvocationOrder { get; set; } = 
     [
+        InvocationType.Adjective,
         InvocationType.Self,
         InvocationType.Descriptor
     ];

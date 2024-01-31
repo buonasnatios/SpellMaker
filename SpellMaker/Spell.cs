@@ -40,12 +40,6 @@ public class Spell(List<IInvocation> invocations, string spellName)
 
     private string GetSpellSentence()
     {
-        var invocationsWithOrder = GetOrderedInvocation().ToList();
-        if (invocationsWithOrder.Count == 1)
-        {
-            var orderedInvocations = CreateOrderedInvocation(invocationsWithOrder.First());
-            Invocations = orderedInvocations.ToList();
-        }
         var sentence = AggregateInvocations();
         sentence = AddTarget(sentence);
         sentence = AddSpellStats(sentence);
@@ -60,66 +54,6 @@ public class Spell(List<IInvocation> invocations, string spellName)
         sentence = AddRangeText(sentence);
         sentence = EndSentence(sentence);
         return sentence;
-    }
-
-    private IEnumerable<IInvocation> CreateOrderedInvocation(IInvocation invocationWithOrder)
-    {
-        LinkedList<IInvocation> orderedInvocations = [];
-        foreach (var invocationType in invocationWithOrder.InvocationOrder)
-        {
-            switch (invocationType)
-            {
-                case InvocationType.Noun:
-                    orderedInvocations.AddLast(Invocations.Find(invocation => invocation.InvocationType == invocationType) ??
-                                               throw new InvalidOperationException());
-                    break;
-                case InvocationType.Verb:
-                    orderedInvocations.AddLast(Invocations.Find(invocation => invocation.InvocationType == invocationType) ??
-                                               throw new InvalidOperationException());
-                    break;
-                case InvocationType.Target:
-                    break;
-                case InvocationType.Self:
-                    orderedInvocations.AddLast(invocationWithOrder);
-                    break;
-                case InvocationType.Adjective:
-                    orderedInvocations.AddLast(Invocations.Find(invocation => invocation.InvocationType == invocationType) ??
-                                               throw new InvalidOperationException());
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        if (orderedInvocations.Count < Invocations.Count)
-        {
-            var extraInvocations = Invocations.Where(invocation => !orderedInvocations.Contains(invocation)).ToList();
-            foreach (var invocation in extraInvocations)
-            {
-                switch (invocation.InvocationType)
-                {
-                    case InvocationType.Noun:
-                        break;
-                    case InvocationType.Verb:
-                        break;
-                    case InvocationType.Target:
-                        break;
-                    case InvocationType.Self:
-                        break;
-                    case InvocationType.Adjective:
-                        orderedInvocations.AddBefore(
-                            orderedInvocations.Find(
-                                orderedInvocations.First(
-                                    orderedInvocation => orderedInvocation.InvocationType == InvocationType.Noun)) ?? throw new InvalidOperationException(), 
-                            invocation);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
-
-        return orderedInvocations;
     }
 
     private IEnumerable<IInvocation> GetOrderedInvocation()
@@ -220,14 +154,7 @@ public class Spell(List<IInvocation> invocations, string spellName)
                 SpellShape = shape.Shape;
                 break;
             case IElement element:
-                if (ElementType is null)
-                {
-                    ElementType = element.ElementType;
-                }
-                else
-                {
-                    ElementType = CombineElements();
-                }
+                ElementType = ElementType is null ? element.ElementType : CombineElements(element.ElementType);
                 Weight = element.WeightModifier;
                 break;
             case TargetModifier targetModifier: 
@@ -297,13 +224,20 @@ public class Spell(List<IInvocation> invocations, string spellName)
                 break;
             case Data.Enums.ElementType.Ice:
                 break;
-            case null:
             case Data.Enums.ElementType.Demonic:
+                break;
             case Data.Enums.ElementType.Air:
+                break;
             case Data.Enums.ElementType.Lava:
+                break;
             case Data.Enums.ElementType.Plasma:
+                break;
+            case null:
+                throw new ArgumentOutOfRangeException(nameof(elementType), elementType, null);
             default:
                 throw new ArgumentOutOfRangeException(nameof(elementType), elementType, null);
         }
+
+        return elementType;
     }
 }

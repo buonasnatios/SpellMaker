@@ -1,8 +1,7 @@
 ﻿using SpellMaker.Data.Enums;
-using SpellMaker.Data.Invocations;
 using SpellMaker.Data.Modifiers;
 
-namespace SpellMaker.Invocations.Verbs;
+namespace SpellMaker.Data.Invocations.Verbs;
 
 public class Throw : IInvocation
 {
