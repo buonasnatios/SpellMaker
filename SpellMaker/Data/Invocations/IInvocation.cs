@@ -8,4 +8,5 @@ public interface IInvocation
     public object Addition { get; set; }
     public InvocationType InvocationType { get; set; }
     public List<InvocationType> InvocationOrder { get; set; }
+    public InvocationOrderPriority OrderPriority { get; set; }
 }

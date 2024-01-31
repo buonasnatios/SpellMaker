@@ -15,4 +15,6 @@ public class Heal : IInvocation
         InvocationType.Self,
         InvocationType.Descriptor
     ];
+
+    public InvocationOrderPriority OrderPriority { get; set; } = InvocationOrderPriority.MediumAvailable;
 }

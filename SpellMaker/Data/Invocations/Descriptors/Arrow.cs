@@ -14,4 +14,5 @@ public class Arrow : IInvocation
     };
     public InvocationType InvocationType { get; set; } = InvocationType.Descriptor;
     public List<InvocationType> InvocationOrder { get; set; } = [];
+    public InvocationOrderPriority OrderPriority { get; set; } = InvocationOrderPriority.None;
 }

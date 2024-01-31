@@ -20,4 +20,6 @@ public class Throw : IInvocation
         InvocationType.Noun,
         InvocationType.Target
     ];
+
+    public InvocationOrderPriority OrderPriority { get; set; } = InvocationOrderPriority.Medium;
 }
