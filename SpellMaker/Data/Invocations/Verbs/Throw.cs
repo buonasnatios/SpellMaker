@@ -1,5 +1,6 @@
 ﻿using SpellMaker.Data.Enums;
 using SpellMaker.Data.Modifiers;
+using SpellMaker.Data.Modifiers.Additions;
 
 namespace SpellMaker.Data.Invocations.Verbs;
 

@@ -1,6 +1,8 @@
 ﻿using SpellMaker.Data.Enums;
 using SpellMaker.Data.Invocations;
 using SpellMaker.Data.Modifiers;
+using SpellMaker.Data.Modifiers.Additions;
+using SpellMaker.Data.Modifiers.Multipliers;
 
 namespace SpellMaker;
 
@@ -14,15 +16,17 @@ public class Spell(List<IInvocation> invocations, string spellName)
     public List<IInvocation> Invocations { get; set; } = invocations;
     public string SpellName { get; set; } = spellName;
     
-    public float Size { get; set; } = 1f;
-    public float Damage { get; set; } = 0.0f;
-    public float Speed { get; set; } = 0.0f;
-    public float Weight { get; set; } = 0.0f;
+    public float Size { get; set; } = 1.0f;
+    public float Damage { get; set; }
+    public float Speed { get; set; }
+    public float Weight { get; set; }
     public float Duration { get; set; } = 1.0f;
     public float Range { get; set; } = 1;
     public float CastTime { get; set; } = 0;
     public int Casts { get; set; } = 1;
+    public float StunMultiplier = 1.0f;
 
+    public float Stun => Piercing * StunMultiplier;
     public float Piercing  => (Weight+Speed)/2;
     public SpellShape SpellShape { get; set; }
     public ElementType? ElementType { get; set; }

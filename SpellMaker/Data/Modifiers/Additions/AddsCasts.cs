@@ -1,4 +1,4 @@
-﻿namespace SpellMaker.Data.Modifiers;
+﻿namespace SpellMaker.Data.Modifiers.Additions;
 
 public class AddsCasts(int casts)
 {

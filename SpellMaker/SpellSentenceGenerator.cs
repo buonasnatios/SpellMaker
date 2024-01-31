@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-using SpellMaker.Data.Enums;
-using SpellMaker.Data.Invocations;
+﻿using SpellMaker.Data.Enums;
 
 namespace SpellMaker;
 
@@ -51,15 +49,15 @@ public class SpellSentenceGenerator(Spell spell)
     {
         switch (Spell.Target)
         {
-            case Data.Enums.Target.Self:
+            case Target.Self:
                 return sentence + "yourself ";
-            case Data.Enums.Target.Ally:
+            case Target.Ally:
                 return sentence + "an ally ";
-            case Data.Enums.Target.Enemy:
+            case Target.Enemy:
                 return sentence + "an enemy ";
-            case Data.Enums.Target.NonSelf:
+            case Target.NonSelf:
                 return sentence + "anyone excluding yourself ";
-            case Data.Enums.Target.Any:
+            case Target.Any:
                 return sentence + "anyone ";
             case null:
                 break;

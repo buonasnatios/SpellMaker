@@ -1,5 +1,5 @@
 ﻿using SpellMaker.Data.Enums;
-using SpellMaker.Data.Modifiers;
+using SpellMaker.Data.Modifiers.Multipliers;
 
 namespace SpellMaker.Data.Invocations.Adjective;
 

@@ -1,4 +1,4 @@
-﻿namespace SpellMaker.Data.Modifiers;
+﻿namespace SpellMaker.Data.Modifiers.Multipliers;
 
 public class MultipliesSize(float multiplier)
 {
