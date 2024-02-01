@@ -6,5 +6,5 @@ public class Cold : IElement
 {
     public string ElementName { get; set; } = "Cold";
     public ElementType ElementType { get; set; } = ElementType.Cold;
-    public float WeightModifier { get; set; } = 1.0f;
+    public float WeightModifier { get; set; } = 0.0f;
 }

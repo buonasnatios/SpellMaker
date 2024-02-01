@@ -1,6 +1,6 @@
 ﻿namespace SpellMaker.Data.Modifiers.Additions;
 
-public class AddsDamage(int damage)
+public class AddsDamage(int addition)
 {
-    public int Damage { get; } = damage;
+    public int Addition { get; set; } = addition;
 }

@@ -3,6 +3,7 @@ using SpellMaker.Data.Invocations;
 using SpellMaker.Data.Modifiers;
 using SpellMaker.Data.Modifiers.Additions;
 using SpellMaker.Data.Modifiers.Multipliers;
+using SpellMaker.Data.Modifiers.Setters;
 
 namespace SpellMaker;
 
@@ -16,34 +17,116 @@ public class Spell(List<IInvocation> invocations, string spellName)
     public List<IInvocation> Invocations { get; set; } = invocations;
     public string SpellName { get; set; } = spellName;
     
-    public float Size { get; set; } = 1.0f;
-    public float Damage { get; set; }
-    public float Speed { get; set; }
-    public float Weight { get; set; }
-    public float Duration { get; set; } = 1.0f;
-    public float Range { get; set; } = 1;
-    public float CastTime { get; set; } = 0;
-    public int Casts { get; set; } = 1;
-    public float StunMultiplier = 1.0f;
+    public int Casts => _baseCasts;
 
-    public float Stun => Piercing * StunMultiplier;
+    public float CastTime => _baseCastTime * _castTimeMultiplier;
+    public float Damage => _baseDamage * _damageMultiplier;
+    public float Duration => _baseDuration * _durationMultiplier;
+    public float Size => _baseSize * _sizeMultiplier;
+    public float Speed => _baseSpeed * _speedMultiplier;
+    public float Weight => _baseWeight * _weightMultiplier;
+    public float Range => _baseRange * _rangeMultiplier;
     public float Piercing  => (Weight+Speed)/2;
+    public float Stun => Piercing * _stunMultiplier;
+    
     public SpellShape SpellShape { get; set; }
     public ElementType? ElementType { get; set; }
     public Target? Target { get; set; }
-    public string SpellSentence => new SpellSentenceGenerator(this).GenerateSentence();
+    public List<InvocationType> SpellOrder { get; set; } = [];
 
-    public int AddInvocation(IInvocation? invocation)
+    private int _baseCasts = 1;
+
+    private float _baseCastTime = 0;
+    private float _baseDamage = 0;
+    private float _baseDuration = 0;
+    private float _baseRange = 0;
+    private float _baseSize = 0;
+    private float _baseSpeed = 0;
+    private float _baseWeight = 0;
+
+    private float _castTimeMultiplier = 1;
+    private float _damageMultiplier = 1;
+    private float _durationMultiplier = 1;
+    private float _rangeMultiplier = 1;
+    private float _sizeMultiplier = 1;
+    private float _speedMultiplier = 1;
+    private float _stunMultiplier = 1;
+    private float _weightMultiplier = 1;
+
+    private InvocationType CurrentSpellType()
+    {
+        return SpellOrder.Count == Invocations.Count ? InvocationType.None : SpellOrder[Invocations.Count];
+    } 
+
+    public bool AddInvocation(IInvocation? invocation)
     {
         if (invocation is null)
         {
-            return 1;
+            throw new NullReferenceException("Invocation that you are trying to add is not valid.");
         }
+
+        if (!CanAddInvocationToSpell(invocation)) return false;
+        
         Invocations.Add(invocation);
         ImplementAdditionEffects(invocation.Addition);
-        return 0;
+        return true;
     }
-    
+
+    private bool CanAddInvocationToSpell(IInvocation invocation)
+    {
+        // Check if Spell doesn't have a SpellOrder.
+        if (SpellOrder.Count == 0 && invocation.InvocationOrder.Count > 0)
+        {
+            InsertInvocationOrderToSpellOrder(0, invocation);
+            return true;
+        }
+
+        // Check if Invocation is already used in current portion ((Verb - Noun) - Additive - (Verb - Noun))
+        for (var index = Invocations.Count-1; index >= 0; index--)
+        {
+            if (invocation == Invocations[index])
+            {
+                return false;
+            }
+            if (Invocations[index].InvocationType == InvocationType.Additive)
+            {
+                break;
+            }
+        }
+        
+        // Check if Invocation is an Additive and if all slots in the SpellOrder are used
+        if (invocation.InvocationType == InvocationType.Additive && SpellOrder.Count == Invocations.Count)
+        {
+            InsertInvocationOrderToSpellOrder(Invocations.Count, invocation);
+            return true;
+        }
+
+
+        switch (invocation.InvocationOrder.Count)
+        {
+            case > 0 when invocation.InvocationType != CurrentSpellType():
+                return false;
+            case > 0:
+                SpellOrder.RemoveAt(Invocations.Count);
+                InsertInvocationOrderToSpellOrder(Invocations.Count, invocation);
+                return true;
+            case 0 when invocation.InvocationType == CurrentSpellType():
+                return true;
+            // Exception for Adjectives as they have to be before a Noun
+            case 0 when invocation.InvocationType == InvocationType.Adjective && CurrentSpellType() == InvocationType.Noun:
+                SpellOrder.Insert(Invocations.Count, invocation.InvocationType);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void InsertInvocationOrderToSpellOrder(int index, IInvocation invocation)
+    {
+        SpellOrder.InsertRange(index, invocation.InvocationOrder);
+        SpellOrder[^invocation.InvocationOrder.Count] = invocation.InvocationType;
+    }
+
     private void ImplementAdditionEffects(object addition)
     {
         switch (addition)
@@ -53,46 +136,67 @@ public class Spell(List<IInvocation> invocations, string spellName)
                 SpellShape = shape.Shape;
                 break;
             case IElement element:
-                ElementType = ElementType is null ? element.ElementType : CombineElements(element.ElementType);
-                Weight = element.WeightModifier;
+                ElementType = CombineElements(element.ElementType);
+                _baseWeight = element.WeightModifier;
                 break;
             case TargetModifier targetModifier: 
                 Target = targetModifier.Target;
                 break;
             
             case SetsRange setsRange:
-                Range = setsRange.Range;
+                _baseRange = setsRange.Setter;
                 break;
             
             //Multipliers
+            case MultipliesCastTime multipliesCastTime:
+                _castTimeMultiplier += multipliesCastTime.Multiplier;
+                break;
             case MultipliesDamage multipliesDamage:
-                Damage *= multipliesDamage.Multiplier;
+                _damageMultiplier += multipliesDamage.Multiplier;
                 break;
             case MultipliesDuration multipliesDuration:
-                Duration *= multipliesDuration.Multiplier;
+                _durationMultiplier += multipliesDuration.Multiplier;
+                break;
+            case MultipliesRange multipliesRange:
+                _rangeMultiplier += multipliesRange.Multiplier;
                 break;
             case MultipliesSize multipliesSize:
-                Size *= multipliesSize.Multiplier;
+                _sizeMultiplier += multipliesSize.Multiplier;
                 break;
             case MultipliesSpeed multipliesSpeed:
-                Speed *= multipliesSpeed.Multiplier;
+                _speedMultiplier += multipliesSpeed.Multiplier;
+                break;
+            case MultipliesStun multipliesStun:
+                _stunMultiplier += multipliesStun.Multiplier;
                 break;
             case MultipliesWeight multipliesWeight:
-                Weight *= multipliesWeight.Multiplier;
+                _weightMultiplier += multipliesWeight.Multiplier;
                 break;
             
             //Additions
             case AddsCasts addsCasts:
-                Casts += addsCasts.Casts;
+                _baseCasts += addsCasts.Addition;
+                break;
+            case AddsCastTime addsCastTime:
+                _baseCastTime += addsCastTime.Addition;
                 break;
             case AddsDamage addsDamage:
-                Damage += addsDamage.Damage;
+                _baseDamage += addsDamage.Addition;
+                break;
+            case AddsDuration addsDuration:
+                _baseDuration += addsDuration.Addition;
                 break;
             case AddsRange addsRange:
-                Range += addsRange.Range;
+                _baseRange += addsRange.Addition;
+                break;
+            case AddsSize addsSize:
+                _baseSize += addsSize.Addition;
                 break;
             case AddsSpeed addsSpeed:
-                Speed += addsSpeed.Speed;
+                _baseSpeed += addsSpeed.Addition;
+                break;
+            case AddsWeight addsWeight:
+                _baseWeight += addsWeight.Addition;
                 break;
             
             case List<object> list:
@@ -107,9 +211,23 @@ public class Spell(List<IInvocation> invocations, string spellName)
 
     private ElementType? CombineElements(ElementType elementType)
     {
+        if (ElementType is null) return elementType;
         switch (ElementType)
         {
             case Data.Enums.ElementType.Cold:
+                switch (elementType)
+                {
+                    case Data.Enums.ElementType.Water:
+                        break;
+                    case Data.Enums.ElementType.Ice:
+                        break;
+                    case Data.Enums.ElementType.Lava:
+                        break;
+                    case Data.Enums.ElementType.Plasma:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(elementType), elementType, null);
+                }
                 break;
             case Data.Enums.ElementType.Earth:
                 break;

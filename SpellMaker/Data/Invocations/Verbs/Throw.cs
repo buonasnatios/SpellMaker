@@ -11,16 +11,14 @@ public class Throw : IInvocation
     {
         new TargetModifier("NonSelf", Target.NonSelf), 
         new AddsRange(6),
-        new AddsSpeed(1)
+        new AddsSpeed(1),
+        new AddsCastTime(1)
     };
     public InvocationType InvocationType { get; set; } = InvocationType.Verb;
 
     public List<InvocationType> InvocationOrder { get; set; } =
     [
         InvocationType.Self,
-        InvocationType.Noun,
-        InvocationType.Target
+        InvocationType.Noun
     ];
-
-    public InvocationOrderPriority OrderPriority { get; set; } = InvocationOrderPriority.Medium;
 }

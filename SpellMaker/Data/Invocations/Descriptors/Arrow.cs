@@ -11,9 +11,9 @@ public class Arrow : IInvocation
     public object Addition { get; set; } = new List<object>
     {
         new ChangesShape(SpellShape.Arrow),
-        new MultipliesSpeed(1.5f)
+        new MultipliesSpeed(1.5f),
+        new MultipliesRange(1.5f)
     };
     public InvocationType InvocationType { get; set; } = InvocationType.Descriptor;
     public List<InvocationType> InvocationOrder { get; set; } = [];
-    public InvocationOrderPriority OrderPriority { get; set; } = InvocationOrderPriority.None;
 }

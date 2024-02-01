@@ -2,10 +2,11 @@
 
 public enum InvocationType
 {
+    None,
     Noun,
     Verb,
-    Target,
     Self,
     Adjective,
-    Descriptor
+    Descriptor,
+    Additive
 }

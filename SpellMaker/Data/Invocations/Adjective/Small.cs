@@ -14,6 +14,4 @@ public class Small : IInvocation
     };
     public InvocationType InvocationType { get; set; } = InvocationType.Adjective;
     public List<InvocationType> InvocationOrder { get; set; } = [];
-
-    public InvocationOrderPriority OrderPriority { get; set; } = InvocationOrderPriority.None;
 }
