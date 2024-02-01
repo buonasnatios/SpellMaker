@@ -1,6 +1,6 @@
 ﻿namespace SpellMaker.Data.Modifiers.Additions;
 
-public class AddsRange(int range)
+public class AddsRange(int addition)
 {
-    public int Range { get; set; } = range;
+    public int Addition { get; set; } = addition;
 }

@@ -17,6 +17,4 @@ public class Touch : IInvocation
         InvocationType.Self,
         InvocationType.Noun
     ];
-
-    public InvocationOrderPriority OrderPriority { get; set; } = InvocationOrderPriority.Medium;
 }

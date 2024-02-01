@@ -1,4 +1,5 @@
 ﻿using SpellMaker.Data.Invocations;
+using SpellMaker.Data.Invocations.Additives;
 using SpellMaker.Data.Invocations.Adjective;
 using SpellMaker.Data.Invocations.Descriptors;
 using SpellMaker.Data.Invocations.Nouns;
@@ -31,7 +32,7 @@ internal static class Program
                 // ignored
             }
 
-            Console.WriteLine(temp.SpellSentence);
+            Console.WriteLine(new SpellSentenceGenerator(temp).GenerateSentence());
             Console.WriteLine("Invocations: " + temp.Invocations);
             Console.WriteLine("CastTime: " + temp.CastTime);
             Console.WriteLine("Damage: " + temp.Damage);
@@ -53,6 +54,9 @@ internal static class Program
 
     private static void RegisterInvocations(this ICollection<IInvocation> invocations)
     {
+        //Additives
+        invocations.Add(new With());
+        
         //Adjective
         invocations.Add(new Big());
         invocations.Add(new Lasting());

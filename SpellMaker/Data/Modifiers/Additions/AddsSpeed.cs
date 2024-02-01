@@ -1,6 +1,6 @@
 ﻿namespace SpellMaker.Data.Modifiers.Additions;
 
-public class AddsSpeed(float speed)
+public class AddsSpeed(int addition)
 {
-    public float Speed { get; set; }
+    public int Addition { get; set; } = addition;
 }

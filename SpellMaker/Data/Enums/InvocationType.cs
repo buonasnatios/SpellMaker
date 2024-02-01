@@ -7,5 +7,6 @@ public enum InvocationType
     Verb,
     Self,
     Adjective,
-    Descriptor
+    Descriptor,
+    Additive
 }

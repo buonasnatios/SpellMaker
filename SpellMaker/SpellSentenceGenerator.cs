@@ -8,6 +8,7 @@ public class SpellSentenceGenerator(Spell spell)
 
     public string GenerateSentence()
     {
+        return string.Join(", ", Spell.Invocations);
         var sentence = AggregateInvocations();
         sentence = AddTarget(sentence);
         sentence = AddSpellStats(sentence);

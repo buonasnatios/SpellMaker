@@ -2,5 +2,5 @@
 
 public class MultipliesWeight(float multiplier)
 {
-    public float Multiplier { get; set; }
+    public float Multiplier { get; set; } = multiplier;
 }
