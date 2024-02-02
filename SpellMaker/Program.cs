@@ -9,7 +9,7 @@ namespace SpellMaker;
 
 internal static class Program
 {
-    private static void Main()
+    /*private static void Main()
     {
         List<IInvocation> invocations = [];
         invocations.RegisterInvocations();
@@ -50,7 +50,7 @@ internal static class Program
             Console.WriteLine("SpellShape: " + temp.SpellShape);
             Console.WriteLine("SpellOrder: " + temp.SpellOrder.Count);
         }
-    }
+    }*/
 
     private static void RegisterInvocations(this ICollection<IInvocation> invocations)
     {
