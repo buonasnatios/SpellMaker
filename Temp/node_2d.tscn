@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://do7yvis8kic0f"]
+
+[ext_resource type="Script" path="res://GameManager.cs" id="1_uxaid"]
+
+[node name="GameManager" type="Node2D"]
+script = ExtResource("1_uxaid")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_left = 33.0
+offset_top = 7.0
+offset_right = 73.0
+offset_bottom = 19.0
